@@ -26,7 +26,7 @@ import reloj.frameworkobsobs.Observador;
 
 /**
  *
- * @author BRC_X
+ * @author BRey
  */
 public class GUIAssignCategory extends javax.swing.JDialog implements Observador {
 

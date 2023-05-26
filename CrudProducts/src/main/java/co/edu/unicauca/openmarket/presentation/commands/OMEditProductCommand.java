@@ -6,7 +6,8 @@ import co.edu.unicauca.openmarket.domain.service.CategoryService;
 import co.edu.unicauca.openmarket.domain.service.ProductService;
 
 /**
- * Comando para editar un producto en el sistema.
+ *
+ * @author BRey
  */
 public class OMEditProductCommand extends OMCommand {
 

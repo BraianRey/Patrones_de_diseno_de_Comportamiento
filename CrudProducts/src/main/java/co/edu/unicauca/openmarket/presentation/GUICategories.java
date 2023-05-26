@@ -16,7 +16,7 @@ import reloj.frameworkobsobs.Observador;
 
 /**
  *
- * @author Libardo Pantoja
+ * @author BRey
  */
 public class GUICategories extends javax.swing.JFrame {
 
@@ -200,7 +200,7 @@ public class GUICategories extends javax.swing.JFrame {
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         if (txtName.getText().trim().equals("")) {
-            Messages.showMessageDialog("Debe ingresar el nombre del categoryo", "Atención");
+            Messages.showMessageDialog("Debe ingresar el nombre de la categoria", "Atención");
             txtName.requestFocus();
             return;
         }
@@ -228,7 +228,7 @@ public class GUICategories extends javax.swing.JFrame {
         Long categoryId = Long.parseLong(txtId.getText());
         Category cat = categoryService.findCategoryById(categoryId);
         if (cat == null) {
-            Messages.showMessageDialog("El identificador del categoryo no existe", "Error");
+            Messages.showMessageDialog("El identificador de la categoria no existe", "Error");
             txtId.setText("");
             txtId.requestFocus();
         } else {

@@ -13,7 +13,7 @@ import reloj.frameworkobsobs.Observador;
 
 /**
  *
- * @author Libardo Pantoja
+ * @author BRey
  */
 public class GUICategoriesFind extends javax.swing.JDialog implements Observador{
     private CategoryService categoryService;

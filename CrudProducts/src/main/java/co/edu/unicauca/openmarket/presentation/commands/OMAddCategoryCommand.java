@@ -11,7 +11,7 @@ import co.edu.unicauca.openmarket.domain.service.CategoryService;
 
 /**
  *
- * @author ahurtado
+ * @author BRey
  */
 public class OMAddCategoryCommand extends OMCommand {
 
@@ -32,10 +32,10 @@ public class OMAddCategoryCommand extends OMCommand {
 
     @Override
     public void unmake() {
-        if (category != null) {
         List<Category> categories = cS.findAllCategories();
         for(Category each: categories){
             if(each.getName().equals(cP.getName())){
+                cR = cS.findCategoryById(each.getCategoryId());
                 result = cS.deleteCategory(each.getCategoryId());
             }
         }

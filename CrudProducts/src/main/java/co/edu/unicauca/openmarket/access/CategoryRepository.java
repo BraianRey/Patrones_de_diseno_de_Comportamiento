@@ -13,10 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Es una implementación que tiene libertad de hacer una implementación del
- * contrato. Lo puede hacer con Sqlite, postgres, mysql, u otra tecnología
  *
- * @author Libardo, Julio
+ * @author BRey
  */
 public class CategoryRepository implements ICategoryRepository {
 

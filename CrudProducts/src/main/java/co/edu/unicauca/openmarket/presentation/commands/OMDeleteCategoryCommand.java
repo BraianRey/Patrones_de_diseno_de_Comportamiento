@@ -5,6 +5,10 @@ import java.util.List;
 import co.edu.unicauca.openmarket.domain.Category;
 import co.edu.unicauca.openmarket.domain.service.CategoryService;
 
+/**
+ *
+ * @author BRey
+ */
 public class OMDeleteCategoryCommand extends OMCommand {
 
     private CategoryService categoryService;

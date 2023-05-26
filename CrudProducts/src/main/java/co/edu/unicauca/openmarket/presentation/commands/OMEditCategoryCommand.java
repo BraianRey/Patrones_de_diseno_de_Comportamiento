@@ -4,7 +4,8 @@ import co.edu.unicauca.openmarket.domain.Category;
 import co.edu.unicauca.openmarket.domain.service.CategoryService;
 
 /**
- * Comando para editar un category en el sistema.
+ *
+ * @author BRey
  */
 public class OMEditCategoryCommand extends OMCommand {
 

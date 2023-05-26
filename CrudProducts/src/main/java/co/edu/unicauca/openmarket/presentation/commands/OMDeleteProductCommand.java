@@ -5,6 +5,10 @@ import java.util.List;
 import co.edu.unicauca.openmarket.domain.Product;
 import co.edu.unicauca.openmarket.domain.service.ProductService;
 
+/**
+ *
+ * @author BRey
+ */
 public class OMDeleteProductCommand extends OMCommand {
 
     private ProductService productService;

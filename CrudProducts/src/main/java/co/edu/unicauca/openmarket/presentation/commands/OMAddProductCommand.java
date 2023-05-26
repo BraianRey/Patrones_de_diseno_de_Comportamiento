@@ -35,6 +35,7 @@ public class OMAddProductCommand extends OMCommand {
         List<Product> products = pS.findAllProducts();
         for(Product each: products){
             if(each.getName().equals(pP.getName())){
+                pR = pS.findProductById(each.getProductId());
                 result = pS.deleteProduct(each.getProductId());
             }
         }
