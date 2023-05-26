@@ -1,39 +1,50 @@
 package co.edu.unicauca.openmarket.presentation.commands;
 
+import java.util.List;
+
 import co.edu.unicauca.openmarket.domain.Product;
 import co.edu.unicauca.openmarket.domain.service.ProductService;
 
 public class OMDeleteProductCommand extends OMCommand {
 
-    private long productId;
     private ProductService productService;
     private Product deletedProduct;
-    private Product returnProduct;
+    private Product product;
     private boolean result;
 
-    private long originalProductId; // Identificador original del producto eliminado
 
-    public OMDeleteProductCommand(long productId, ProductService productService) {
-        this.productId = productId;
+    public OMDeleteProductCommand(Long productID, ProductService productService) {
         this.productService = productService;
+        this.product = productService.findProductById(productID);
     }
 
     @Override
     public void make() {
-        deletedProduct = productService.findProductById(productId);
-        result = productService.deleteProduct(productId);
+        List<Product> products = productService.findAllProducts();
+        for(Product each: products){
+            if(each.getName().equals(product.getName())){
+                //!Configurar para eliminado unico, se uso por alternatica para la simulacion
+                //ya que el id aumenta cada vez mas
+                deletedProduct = each;
+                result = productService.deleteProduct(each.getProductId());
+            }
+        }
     }
 
     @Override
     public void unmake() {
         result = productService.saveProduct(deletedProduct.getName(), deletedProduct.getDescription());
-        result = true;
     }
 
     @Override
     public void remake() {
-        if (deletedProduct != null) {
-            result = productService.deleteProduct(deletedProduct.getProductId()); // Indica que la operación fue exitosa
+        List<Product> products = productService.findAllProducts();
+        for(Product each: products){
+            if(each.getName().equals(deletedProduct.getName())){
+                //!Configurar para eliminado unico, se uso por alternatica para la simulacion
+                //ya que el id aumenta cada vez mas
+                result = productService.deleteProduct(each.getProductId());
+            }
         }
     }
 

@@ -4,6 +4,8 @@
  */
 package co.edu.unicauca.openmarket.presentation.commands;
 
+import java.util.List;
+
 import co.edu.unicauca.openmarket.domain.Category;
 import co.edu.unicauca.openmarket.domain.service.CategoryService;
 
@@ -30,12 +32,12 @@ public class OMAddCategoryCommand extends OMCommand {
 
     @Override
     public void unmake() {
-    if (cP != null) {
-        Category category = cS.findCategoryById(cP.getCategoryId());
         if (category != null) {
-            this.cR = new Category(category.getCategoryId(), category.getName());
-            result = cS.deleteCategory(category.getCategoryId());
-        }
+        List<Category> categories = cS.findAllCategories();
+        for(Category each: categories){
+            if(each.getName().equals(cP.getName())){
+                result = cS.deleteCategory(each.getCategoryId());
+            }
         }
     }
 
