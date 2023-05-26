@@ -46,12 +46,6 @@ public class GUIAssignCategory extends javax.swing.JDialog implements Observador
         this.productService = productService;
         ominvoker = new OMInvoker();
         setLocationRelativeTo(null);
-        stateStart();
-    }
-
-    private void stateStart() {
-        btnRecuperar.setVisible(ominvoker.hasMoreRecuperableCommands());
-        btnDeshacer.setVisible(ominvoker.hasMoreCommands());
     }
 
     private void initializeTable() {
@@ -95,8 +89,9 @@ public class GUIAssignCategory extends javax.swing.JDialog implements Observador
             rowData[0] = listProducts.get(i).getProductId();
             rowData[1] = listProducts.get(i).getName();
             rowData[2] = listProducts.get(i).getDescription();
-            if (listProducts.get(i).getCategory() != null)
+            if (listProducts.get(i).getCategory() != null) {
                 rowData[3] = listProducts.get(i).getCategory().getName();
+            }
             rowData[4] = false; // Valor inicial de la casilla de verificación
 
             model.addRow(rowData);
@@ -240,7 +235,7 @@ public class GUIAssignCategory extends javax.swing.JDialog implements Observador
                 prod.setName(tblMyProducts.getValueAt(i, 1).toString());
                 prod.setDescription(tblMyProducts.getValueAt(i, 2).toString());
                 prod.setCategory(MyCategory);
-               // Messages.showMessageDialog(prod.getName(), "Categoria del prod");
+                // Messages.showMessageDialog(prod.getName(), "Categoria del prod");
 
                 OMEditProductCommand comm = new OMEditProductCommand(productId, productService, categoryService, prod.getName(), prod.getDescription(), 0, prod.getCategory());
                 ominvoker.addCommand(comm);
@@ -253,6 +248,7 @@ public class GUIAssignCategory extends javax.swing.JDialog implements Observador
         if (MyCategory != null) {
             Messages.showMessageDialog("Se termino el proceso", "Categoria: " + MyCategory.getName());
         }
+        actualizar();
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void CBoxCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CBoxCategoriesActionPerformed
@@ -264,19 +260,17 @@ public class GUIAssignCategory extends javax.swing.JDialog implements Observador
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnDeshacerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeshacerActionPerformed
-        ominvoker.unexecute();
-        if (!ominvoker.hasMoreCommands()) {
-            this.btnDeshacer.setVisible(false);
+        if (ominvoker.hasMoreCommands()) {
+            ominvoker.unexecute();
+            actualizar();
         }
-        btnRecuperar.setVisible(true);
     }//GEN-LAST:event_btnDeshacerActionPerformed
 
     private void btnRecuperarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecuperarActionPerformed
-        ominvoker.reexecute();
-        if (!ominvoker.hasMoreRecuperableCommands()) {
-            this.btnRecuperar.setVisible(false);
+        if (ominvoker.hasMoreRecuperableCommands()) {
+            ominvoker.reexecute();
+            actualizar();
         }
-        btnDeshacer.setVisible(ominvoker.hasMoreCommands());
     }//GEN-LAST:event_btnRecuperarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -1,39 +1,50 @@
 package co.edu.unicauca.openmarket.presentation.commands;
 
+import java.util.List;
+
 import co.edu.unicauca.openmarket.domain.Category;
 import co.edu.unicauca.openmarket.domain.service.CategoryService;
 
 public class OMDeleteCategoryCommand extends OMCommand {
 
-    private long productId;
-    private CategoryService productService;
+    private CategoryService categoryService;
     private Category deletedCategory;
-    private Category returnCategory;
+    private Category category;
     private boolean result;
 
-    private long originalCategoryId; // Identificador original del producto eliminado
 
-    public OMDeleteCategoryCommand(long productId, CategoryService productService) {
-        this.productId = productId;
-        this.originalCategoryId = productId; // Almacenamos el identificador original
-        this.productService = productService;
+    public OMDeleteCategoryCommand(Long categoryID, CategoryService categoryService) {
+        this.categoryService = categoryService;
+        this.category = categoryService.findCategoryById(categoryID);
     }
 
     @Override
     public void make() {
-        deletedCategory = productService.findCategoryById(productId);
-        result = productService.deleteCategory(productId);
+        List<Category> categories = categoryService.findAllCategories();
+        for(Category each: categories){
+            if(each.getName().equals(category.getName())){
+                //!Configurar para eliminado unico, se uso por alternatica para la simulacion
+                //ya que el id aumenta cada vez mas
+                deletedCategory = each;
+                result = categoryService.deleteCategory(each.getCategoryId());
+            }
+        }
     }
 
     @Override
     public void unmake() {
-        result = productService.saveCategory(deletedCategory.getName());
+        result = categoryService.saveCategory(deletedCategory.getName());
     }
 
     @Override
     public void remake() {
-        if (deletedCategory != null) {
-            result = productService.deleteCategory(originalCategoryId); // Indica que la operación fue exitosa
+        List<Category> categories = categoryService.findAllCategories();
+        for(Category each: categories){
+            if(each.getName().equals(deletedCategory.getName())){
+                //!Configurar para eliminado unico, se uso por alternatica para la simulacion
+                //ya que el id aumenta cada vez mas
+                result = categoryService.deleteCategory(each.getCategoryId());
+            }
         }
     }
 
