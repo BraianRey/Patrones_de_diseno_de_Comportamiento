@@ -6,7 +6,6 @@ package co.edu.unicauca.openmarket.presentation.commands;
 
 import co.edu.unicauca.openmarket.domain.Product;
 import co.edu.unicauca.openmarket.domain.service.ProductService;
-import java.util.List;
 
 /**
  *
@@ -31,19 +30,24 @@ public class OMAddProductCommand extends OMCommand {
 
     @Override
     public void unmake() {
-        List<Product> products = pS.findAllProducts();
-        for(Product each: products){
-            if(each.getName().equals(pP.getName())){
-                this.pR = pS.findProductById(each.getProductId());
-                result = pS.deleteProduct(each.getProductId());
-            }
+    if (pP != null) {
+        Product product = pS.findProductById(pP.getProductId());
+        if (product != null) {
+            this.pR = new Product(product.getProductId(), product.getName(), product.getDescription(), product.getPrice());
+            result = pS.deleteProduct(product.getProductId());
+        }
         }
     }
 
-    
+    @Override
+    public void remake() {
+    if (pR != null) {
+        result = pS.saveProduct(pR.getName(), pR.getDescription());
+    }
+    }
     
     public boolean result(){
         return result;
     }
     
-}
+    }

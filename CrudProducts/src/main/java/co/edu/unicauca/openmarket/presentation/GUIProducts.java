@@ -1,11 +1,15 @@
 package co.edu.unicauca.openmarket.presentation;
 
+import co.edu.unicauca.openmarket.access.Factory;
 import co.edu.unicauca.openmarket.domain.Product;
+import co.edu.unicauca.openmarket.domain.service.CategoryService;
 import co.edu.unicauca.openmarket.domain.service.ProductService;
 import co.edu.unicauca.openmarket.infra.Messages;
 import co.edu.unicauca.openmarket.presentation.commands.OMAddProductCommand;
-import co.edu.unicauca.openmarket.presentation.commands.OMCommand;
+import co.edu.unicauca.openmarket.presentation.commands.OMDeleteProductCommand;
+import co.edu.unicauca.openmarket.presentation.commands.OMEditProductCommand;
 import co.edu.unicauca.openmarket.presentation.commands.OMInvoker;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -15,6 +19,8 @@ import javax.swing.JOptionPane;
 public class GUIProducts extends javax.swing.JFrame {
 
     private ProductService productService;
+   // private CategoryService categoryService;
+    private CategoryService categoryService;
     private boolean addOption;
     private OMInvoker ominvoker;
 
@@ -24,7 +30,9 @@ public class GUIProducts extends javax.swing.JFrame {
     public GUIProducts(ProductService productService) {
         initComponents();
         this.productService = productService;
+        this.categoryService = new CategoryService(Factory.getInstance().getCRepository("default"));
         ominvoker = new OMInvoker();
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         stateInitial();
 
     }
@@ -39,6 +47,7 @@ public class GUIProducts extends javax.swing.JFrame {
     private void initComponents() {
 
         pnlSouth = new javax.swing.JPanel();
+        bttmRemake = new javax.swing.JButton();
         btnNuevo = new javax.swing.JButton();
         btnEditar = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
@@ -47,6 +56,7 @@ public class GUIProducts extends javax.swing.JFrame {
         btnFind = new javax.swing.JButton();
         btnCerrar = new javax.swing.JButton();
         btnDeshacer = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         pnlCenter = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtId = new javax.swing.JTextField();
@@ -60,6 +70,14 @@ public class GUIProducts extends javax.swing.JFrame {
         setTitle("Productos");
 
         pnlSouth.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        bttmRemake.setText("Recuperar");
+        bttmRemake.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bttmRemakeActionPerformed(evt);
+            }
+        });
+        pnlSouth.add(bttmRemake);
 
         btnNuevo.setText("Nuevo");
         btnNuevo.addActionListener(new java.awt.event.ActionListener() {
@@ -126,6 +144,14 @@ public class GUIProducts extends javax.swing.JFrame {
         });
         pnlSouth.add(btnDeshacer);
 
+        jButton1.setText("Gestionar categoria(s)");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        pnlSouth.add(jButton1);
+
         getContentPane().add(pnlSouth, java.awt.BorderLayout.SOUTH);
 
         pnlCenter.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -158,6 +184,8 @@ public class GUIProducts extends javax.swing.JFrame {
         pnlCenter.add(jScrollPane1);
 
         getContentPane().add(pnlCenter, java.awt.BorderLayout.CENTER);
+
+        getAccessibleContext().setAccessibleName("Categorias");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -225,6 +253,9 @@ public class GUIProducts extends javax.swing.JFrame {
         }
         Long productId = Long.parseLong(id);
         if (Messages.showConfirmDialog("Está seguro que desea eliminar este producto?", "Confirmación") == JOptionPane.YES_NO_OPTION) {
+            OMDeleteProductCommand comm= new OMDeleteProductCommand(productId, productService);
+            ominvoker.addCommand(comm);
+            ominvoker.execute();
             if (productService.deleteProduct(productId)) {
                 Messages.showMessageDialog("Producto eliminado con éxito", "Atención");
                 stateInitial();
@@ -238,15 +269,30 @@ public class GUIProducts extends javax.swing.JFrame {
         instance.setVisible(true);
         productService.addObservador(instance);
     }//GEN-LAST:event_btnFindActionPerformed
-
+    
+    /**
+     * @brief Boton deshacer 
+     */
     private void btnDeshacerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeshacerActionPerformed
-        // TODO add your handling code here:
-        
         ominvoker.unexecute();
-        if(!ominvoker.hasMoreCommands())
+        if (!ominvoker.hasMoreCommands())
             this.btnDeshacer.setVisible(false);
-        
+        bttmRemake.setVisible(true);
     }//GEN-LAST:event_btnDeshacerActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        GUICategories instance = new GUICategories(productService, categoryService);
+        instance.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        instance.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void bttmRemakeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bttmRemakeActionPerformed
+        ominvoker.reexecute();
+        if(!ominvoker.hasMoreRecuperableCommands())
+            this.bttmRemake.setVisible(false);
+        btnDeshacer.setVisible(ominvoker.hasMoreCommands());
+    }//GEN-LAST:event_bttmRemakeActionPerformed
+
     private void stateEdit() {
         btnNuevo.setVisible(false);
         btnEditar.setVisible(false);
@@ -271,6 +317,7 @@ public class GUIProducts extends javax.swing.JFrame {
         txtId.setEnabled(false);
         txtName.setEnabled(false);
         txtDescription.setEnabled(false);
+        bttmRemake.setVisible(ominvoker.hasMoreRecuperableCommands());
         btnDeshacer.setVisible(ominvoker.hasMoreCommands());
 
     }
@@ -284,6 +331,8 @@ public class GUIProducts extends javax.swing.JFrame {
     private javax.swing.JButton btnFind;
     private javax.swing.JButton btnNuevo;
     private javax.swing.JButton btnSave;
+    private javax.swing.JButton bttmRemake;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -307,6 +356,7 @@ public class GUIProducts extends javax.swing.JFrame {
         txtName.setEnabled(true);
         txtDescription.setEnabled(true);
         btnDeshacer.setVisible(ominvoker.hasMoreCommands());
+        bttmRemake.setVisible(ominvoker.hasMoreRecuperableCommands());
     }
 
     private void cleanControls() {
@@ -342,8 +392,12 @@ public class GUIProducts extends javax.swing.JFrame {
         Product prod = new Product();
         prod.setName(txtName.getText().trim());
         prod.setDescription(txtDescription.getText().trim());
-
-        if (productService.editProduct(productId, prod)) {
+        
+        OMEditProductCommand comm = new OMEditProductCommand(productId, productService, prod.getName(), prod.getDescription(), 0);
+        ominvoker.addCommand(comm);
+        ominvoker.execute();
+        
+        if (comm.result()) {
             Messages.showMessageDialog("Se editó con éxito", "Atención");
             cleanControls();
             stateInitial();

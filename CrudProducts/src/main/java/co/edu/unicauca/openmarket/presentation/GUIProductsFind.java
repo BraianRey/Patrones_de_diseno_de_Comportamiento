@@ -32,7 +32,7 @@ public class GUIProductsFind extends javax.swing.JDialog implements Observador{
         tblProducts.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
                 new String[]{
-                    "Id", "Name", "Description"
+                    "Id", "Name", "Description", "Category"
                 }
         ));
     }
@@ -48,8 +48,19 @@ public class GUIProductsFind extends javax.swing.JDialog implements Observador{
             rowData[2] = listProducts.get(i).getDescription();
             
             model.addRow(rowData);
+        }}
+        
+        private void fillTable(Product product) {
+        initializeTable();
+        DefaultTableModel model = (DefaultTableModel) tblProducts.getModel();
+
+        Object rowData[] = new Object[3];//No columnas
+            rowData[0] = product.getProductId();
+            rowData[1] = product.getName();
+            rowData[2] = product.getDescription();
+            
+            model.addRow(rowData);
         }
-    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -111,6 +122,11 @@ public class GUIProductsFind extends javax.swing.JDialog implements Observador{
         pnlNorth.add(txtSearch);
 
         btnSearch.setText("Buscar");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
         pnlNorth.add(btnSearch);
 
         btnSearchAll.setText("Buscar Todos");
@@ -143,6 +159,16 @@ public class GUIProductsFind extends javax.swing.JDialog implements Observador{
     private void btnSearchAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchAllActionPerformed
         fillTable(productService.findAllProducts());
     }//GEN-LAST:event_btnSearchAllActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        if (!"".equals(txtSearch.getText())){
+        try {
+            long text = Long.parseLong(txtSearch.getText());
+            fillTable(productService.findProductById(text));
+        }
+        catch (Exception e) {}
+        }
+    }//GEN-LAST:event_btnSearchActionPerformed
 
  
 

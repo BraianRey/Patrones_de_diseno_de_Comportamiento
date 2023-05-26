@@ -2,6 +2,7 @@ package co.edu.unicauca.openmarket.domain.service;
 
 
 import co.edu.unicauca.openmarket.access.IProductRepository;
+import co.edu.unicauca.openmarket.domain.Category;
 import co.edu.unicauca.openmarket.domain.Product;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class ProductService extends Observado{
 
     public List<Product> findAllProducts() {
         List<Product> products = new ArrayList<>();
-        products = repository.findAll();;
+        products = repository.findAll();
 
         return products;
     }
@@ -71,5 +72,17 @@ public class ProductService extends Observado{
         }
         return repository.edit(productId, prod);
     }
+    
+    public boolean editProduct(Long productId, Product prod, Category category) {
+    //Validate product
+    if (prod == null || prod.getName().isBlank()) {
+        return false;
+    }
+    
+    // Asignar la nueva categoría al producto
+    prod.setCategory(category);
+    
+    return repository.edit(productId, prod);
+}
 
 }

@@ -18,13 +18,14 @@ public class Main {
      */
     public static void main(String[] args) {
         
-        IProductRepository repository = Factory.getInstance().getRepository("default");
+        IProductRepository repository = Factory.getInstance().getPRepository("default");
         ProductService productService = new ProductService(repository);
         
         GUIProducts instance = new GUIProducts(productService);
         instance.setVisible(true);
+        
         GUIProductsFind instance2 = new GUIProductsFind(null,false,productService);
-        instance2.setVisible(true);
+        instance2.setVisible(false);
         productService.addObservador(instance2);
     }
     

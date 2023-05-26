@@ -1,6 +1,7 @@
 
 package co.edu.unicauca.openmarket.access;
 
+import co.edu.unicauca.openmarket.domain.Category;
 import co.edu.unicauca.openmarket.domain.Product;
 import java.util.List;
 

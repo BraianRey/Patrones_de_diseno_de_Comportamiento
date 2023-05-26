@@ -36,8 +36,7 @@ public class ProductRepository implements IProductRepository {
             }
             //this.connect();
 
-            String sql = "INSERT INTO products ( name, description ) "
-                    + "VALUES ( ?, ? )";
+            String sql = "INSERT INTO products ( name, description ) VALUES ( ?, ? )";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, newProduct.getName());
@@ -82,7 +81,8 @@ public class ProductRepository implements IProductRepository {
         String sql = "CREATE TABLE IF NOT EXISTS products (\n"
                 + "	productId integer PRIMARY KEY AUTOINCREMENT,\n"
                 + "	name text NOT NULL,\n"
-                + "	description text NULL\n"
+                + "	description text NULL,\n"
+                + "     category blob NULL\n"
                 + ");";
 
         try {
@@ -123,29 +123,30 @@ public class ProductRepository implements IProductRepository {
 
     @Override
     public boolean edit(Long id, Product product) {
-        try {
-            //Validate product
-            if (id <= 0 || product == null) {
-                return false;
-            }
-            //this.connect();
-
-            String sql = "UPDATE  products "
-                    + "SET name=?, description=? "
-                    + "WHERE productId = ?";
-
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, product.getName());
-            pstmt.setString(2, product.getDescription());
-            pstmt.setLong(3, id);
-            pstmt.executeUpdate();
-            //this.disconnect();
-            return true;
-        } catch (SQLException ex) {
-            Logger.getLogger(ProductRepository.class.getName()).log(Level.SEVERE, null, ex);
+    try {
+        // Validate product
+        if (id <= 0 || product == null) {
+            return false;
         }
-        return false;
+        // this.connect();
+
+        String sql = "UPDATE products SET name=?, description=?, category=? WHERE productId=?";
+
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, product.getName());
+        pstmt.setString(2, product.getDescription());
+        if(product.getCategory() != null){
+            pstmt.setLong(3, product.getCategory().getCategoryId()); // Asignar el ID de la categoría
+        } else pstmt.setLong(3, -1L);
+        pstmt.setLong(4, id);
+        pstmt.executeUpdate();
+        // this.disconnect();
+        return true;
+    } catch (SQLException ex) {
+        Logger.getLogger(ProductRepository.class.getName()).log(Level.SEVERE, null, ex);
     }
+    return false;
+}
 
     @Override
     public boolean delete(Long id) {
@@ -156,8 +157,7 @@ public class ProductRepository implements IProductRepository {
             }
             //this.connect();
 
-            String sql = "DELETE FROM products "
-                    + "WHERE productId = ?";
+            String sql = "DELETE FROM products WHERE productId = ?";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setLong(1, id);
@@ -174,8 +174,7 @@ public class ProductRepository implements IProductRepository {
     public Product findById(Long id) {
         try {
 
-            String sql = "SELECT * FROM products  "
-                    + "WHERE productId = ?";
+            String sql = "SELECT * FROM products WHERE productId = ?";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setLong(1, id);
