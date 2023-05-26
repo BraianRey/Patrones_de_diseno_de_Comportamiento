@@ -1,6 +1,8 @@
 package co.edu.unicauca.openmarket.access;
 
 import co.edu.unicauca.openmarket.domain.Product;
+import co.edu.unicauca.openmarket.domain.service.CategoryService;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -65,6 +67,7 @@ public class ProductRepository implements IProductRepository {
                 newProduct.setProductId(rs.getLong("productId"));
                 newProduct.setName(rs.getString("name"));
                 newProduct.setDescription(rs.getString("description"));
+                newProduct.setCategory(CategoryService.findCategoryById(rs.getLong("category")));
 
                 products.add(newProduct);
             }
@@ -186,6 +189,7 @@ public class ProductRepository implements IProductRepository {
                 prod.setProductId(res.getLong("productId"));
                 prod.setName(res.getString("name"));
                 prod.setDescription(res.getString("description"));
+                prod.setCategory(CategoryService.findCategoryById(res.getLong("category")));
                 return prod;
             } else {
                 return null;

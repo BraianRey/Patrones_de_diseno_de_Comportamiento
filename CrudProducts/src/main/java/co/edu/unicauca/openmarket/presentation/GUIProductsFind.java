@@ -41,11 +41,13 @@ public class GUIProductsFind extends javax.swing.JDialog implements Observador{
         initializeTable();
         DefaultTableModel model = (DefaultTableModel) tblProducts.getModel();
 
-        Object rowData[] = new Object[3];//No columnas
+        Object rowData[] = new Object[4];//No columnas
         for (int i = 0; i < listProducts.size(); i++) {
             rowData[0] = listProducts.get(i).getProductId();
             rowData[1] = listProducts.get(i).getName();
             rowData[2] = listProducts.get(i).getDescription();
+            if (listProducts.get(i).getCategory() != null)
+                rowData[3] = listProducts.get(i).getCategory().getName();
             
             model.addRow(rowData);
         }}
@@ -54,10 +56,12 @@ public class GUIProductsFind extends javax.swing.JDialog implements Observador{
         initializeTable();
         DefaultTableModel model = (DefaultTableModel) tblProducts.getModel();
 
-        Object rowData[] = new Object[3];//No columnas
+        Object rowData[] = new Object[4];//No columnas
             rowData[0] = product.getProductId();
             rowData[1] = product.getName();
             rowData[2] = product.getDescription();
+            if (product.getCategory() != null)
+            rowData[3] = product.getCategory().getName();
             
             model.addRow(rowData);
         }

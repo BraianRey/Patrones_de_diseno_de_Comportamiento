@@ -13,7 +13,7 @@ public class CategoryService extends Observado{
 
     // Ahora hay una dependencia de una abstracción, no es algo concreto,
     // no sabe cómo está implementado.
-    private ICategoryRepository repository;
+    private static ICategoryRepository repository;
 
     /**
      * Inyección de dependencias en el constructor. Ya no conviene que el mismo
@@ -47,7 +47,7 @@ public class CategoryService extends Observado{
         return categories;
     }
     
-    public Category findCategoryById(Long id){
+    public static Category findCategoryById(Long id){
         return repository.findById(id);
     }
     

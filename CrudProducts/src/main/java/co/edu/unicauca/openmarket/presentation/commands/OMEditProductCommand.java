@@ -39,8 +39,7 @@ public class OMEditProductCommand extends OMCommand {
                 Category category = categoryService.findCategoryByName(newProduct.getCategory().getName());
                 newProduct.setCategory(category);
                 // Copia la categoría del nuevo producto al producto existente
-                oldProduct.setCategory(newProduct.getCategory());
-                result = productService.editProduct(productId, oldProduct);
+                result = productService.editProduct(productId, newProduct);          
             } else {
                 // Si la categoría es nula, intenta editar el producto sin especificar la categoría
                 result = productService.editProduct(productId, newProduct);
@@ -54,7 +53,7 @@ public class OMEditProductCommand extends OMCommand {
         if (oldProduct != null) {
             Category category = oldProduct.getCategory();
             if (category != null) {
-                result = productService.editProduct(productId, oldProduct, category);
+                result = productService.editProduct(productId, oldProduct, oldProduct.getCategory());
             } else {
                 result = productService.editProduct(productId, oldProduct);
             }

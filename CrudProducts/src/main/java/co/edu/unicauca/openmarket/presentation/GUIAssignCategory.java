@@ -37,7 +37,7 @@ public class GUIAssignCategory extends javax.swing.JDialog implements Observador
     private CategoryService categoryService;
     private Map<String, Integer> categoryIndexMap = new HashMap<>();
     private OMInvoker ominvoker;
-    
+
     public GUIAssignCategory(java.awt.Frame parent, boolean modal, ProductService productService, CategoryService categoryService) {
         super(parent, modal);
         initComponents();
@@ -48,32 +48,35 @@ public class GUIAssignCategory extends javax.swing.JDialog implements Observador
         setLocationRelativeTo(null);
         stateStart();
     }
-    
-    private void stateStart(){
+
+    private void stateStart() {
         btnRecuperar.setVisible(ominvoker.hasMoreRecuperableCommands());
         btnDeshacer.setVisible(ominvoker.hasMoreCommands());
     }
-    
+
     private void initializeTable() {
-    tblMyProducts.setModel(new javax.swing.table.DefaultTableModel(
-        new Object[][]{},
-        new String[]{
-            "Id", "Name", "Description", "Category", "Select"
-        }
-    ) {
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            if (columnIndex == 4) {
-                return Boolean.class;
+        tblMyProducts.setModel(new javax.swing.table.DefaultTableModel(
+                new Object[][]{},
+                new String[]{
+                    "Id", "Name", "Description", "Category", "Select"
+                }
+        ) {
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 4) {
+                    return Boolean.class;
+                }
+                return super.getColumnClass(columnIndex);
             }
-            return super.getColumnClass(columnIndex);
-        }
-    });
-}
+        });
+    }
 
     private void fillList(List<Category> listCategory) {
-        if (listCategory.isEmpty()) CBoxCategories.setEditable(false);
-        else CBoxCategories.setEnabled(true);
+        if (listCategory.isEmpty()) {
+            CBoxCategories.setEditable(false);
+        } else {
+            CBoxCategories.setEnabled(true);
+        }
 
         for (int i = 0; i < listCategory.size(); i++) {
             Category category = listCategory.get(i);
@@ -82,36 +85,38 @@ public class GUIAssignCategory extends javax.swing.JDialog implements Observador
             categoryIndexMap.put(categoryName, i);
         }
     }
-    
-        private void fillTable(List<Product> listProducts) {
-    initializeTable();
-    DefaultTableModel model = (DefaultTableModel) tblMyProducts.getModel();
 
-    for (int i = 0; i < listProducts.size(); i++) {
-        Object[] rowData = new Object[5]; // Incrementamos el tamaño a 5 para incluir la columna "Select"
-        rowData[0] = listProducts.get(i).getProductId();
-        rowData[1] = listProducts.get(i).getName();
-        rowData[2] = listProducts.get(i).getDescription();
-        rowData[3] = listProducts.get(i).getCategory();
-        rowData[4] = false; // Valor inicial de la casilla de verificación
-        
-        model.addRow(rowData);
+    private void fillTable(List<Product> listProducts) {
+        initializeTable();
+        DefaultTableModel model = (DefaultTableModel) tblMyProducts.getModel();
+
+        for (int i = 0; i < listProducts.size(); i++) {
+            Object[] rowData = new Object[5]; // Incrementamos el tamaño a 5 para incluir la columna "Select"
+            rowData[0] = listProducts.get(i).getProductId();
+            rowData[1] = listProducts.get(i).getName();
+            rowData[2] = listProducts.get(i).getDescription();
+            if (listProducts.get(i).getCategory() != null)
+                rowData[3] = listProducts.get(i).getCategory().getName();
+            rowData[4] = false; // Valor inicial de la casilla de verificación
+
+            model.addRow(rowData);
+        }
+
+        // Configurar el renderizador de la columna "Select"
+        TableColumn checkboxColumn = tblMyProducts.getColumnModel().getColumn(4);
+        checkboxColumn.setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JCheckBox checkbox = new JCheckBox();
+                checkbox.setSelected((Boolean) value);
+                return checkbox;
+            }
+        });
+
+        // Configurar el editor de la columna "Select"
+        checkboxColumn.setCellEditor(new DefaultCellEditor(new JCheckBox()));
     }
 
-    // Configurar el renderizador de la columna "Select"
-    TableColumn checkboxColumn = tblMyProducts.getColumnModel().getColumn(4);
-    checkboxColumn.setCellRenderer(new DefaultTableCellRenderer() {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JCheckBox checkbox = new JCheckBox();
-            checkbox.setSelected((Boolean) value);
-            return checkbox;
-        }
-    });
-
-    // Configurar el editor de la columna "Select"
-    checkboxColumn.setCellEditor(new DefaultCellEditor(new JCheckBox()));
-}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -217,31 +222,35 @@ public class GUIAssignCategory extends javax.swing.JDialog implements Observador
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         String selectedCategoryName = "";
         Category MyCategory = null;
-        if (CBoxCategories.getItemCount() == 0) return;
+        if (CBoxCategories.getItemCount() == 0) {
+            return;
+        }
         if (CBoxCategories.getSelectedItem() != null) {
-                selectedCategoryName = CBoxCategories.getSelectedItem().toString();
-                Messages.showMessageDialog(selectedCategoryName, "selectedCategoryName");
-                MyCategory = categoryService.findCategoryByName(selectedCategoryName);
-                Messages.showMessageDialog(MyCategory.getName(), "selectedCategoryName Post Find");
-        } else return;
+            selectedCategoryName = CBoxCategories.getSelectedItem().toString();
+            //Messages.showMessageDialog(selectedCategoryName, "selectedCategoryName");
+            MyCategory = categoryService.findCategoryByName(selectedCategoryName);
+            //Messages.showMessageDialog(MyCategory.getName(), "selectedCategoryName Post Find");
+        } else {
+            return;
+        }
         for (int i = 0; i < tblMyProducts.getRowCount(); i++) {
-            if (Boolean.parseBoolean(tblMyProducts.getValueAt(i, 4).toString())){
+            if (Boolean.parseBoolean(tblMyProducts.getValueAt(i, 4).toString())) {
                 Long productId = Long.parseLong(tblMyProducts.getValueAt(i, 0).toString());
                 Product prod = new Product();
                 prod.setName(tblMyProducts.getValueAt(i, 1).toString());
                 prod.setDescription(tblMyProducts.getValueAt(i, 2).toString());
                 prod.setCategory(MyCategory);
-                Messages.showMessageDialog(prod.getName(), "Categoria del prod");
+               // Messages.showMessageDialog(prod.getName(), "Categoria del prod");
 
                 OMEditProductCommand comm = new OMEditProductCommand(productId, productService, categoryService, prod.getName(), prod.getDescription(), 0, prod.getCategory());
                 ominvoker.addCommand(comm);
                 ominvoker.execute();
-                
-                Messages.showMessageDialog("Se actualizo", "Proceso: " + productService.findProductById(productId).getName());
-                //Messages.showMessageDialog(productService.findProductById(productId).getCategory().getName(), "Categoria actualiz");
+
+                //Messages.showMessageDialog("Se actualizo", "Proceso: " + productService.findProductById(productId).getName());
+                Messages.showMessageDialog(productService.findProductById(productId).getCategory().getName(), "Categoria actualiz");
             }
         }
-        if(MyCategory == null){
+        if (MyCategory != null) {
             Messages.showMessageDialog("Se termino el proceso", "Categoria: " + MyCategory.getName());
         }
     }//GEN-LAST:event_btnSearchActionPerformed
@@ -256,15 +265,17 @@ public class GUIAssignCategory extends javax.swing.JDialog implements Observador
 
     private void btnDeshacerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeshacerActionPerformed
         ominvoker.unexecute();
-        if (!ominvoker.hasMoreCommands())
+        if (!ominvoker.hasMoreCommands()) {
             this.btnDeshacer.setVisible(false);
+        }
         btnRecuperar.setVisible(true);
     }//GEN-LAST:event_btnDeshacerActionPerformed
 
     private void btnRecuperarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecuperarActionPerformed
         ominvoker.reexecute();
-        if(!ominvoker.hasMoreRecuperableCommands())
+        if (!ominvoker.hasMoreRecuperableCommands()) {
             this.btnRecuperar.setVisible(false);
+        }
         btnDeshacer.setVisible(ominvoker.hasMoreCommands());
     }//GEN-LAST:event_btnRecuperarActionPerformed
 
